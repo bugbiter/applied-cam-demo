@@ -23,7 +23,7 @@ def main():
 
   # read config
   config_parser = configparser.RawConfigParser()
-  config_file_path = r'$config/parameters.conf'
+  config_file_path = r'./config/parameters.conf'
   try:
     config_parser.read(config_file_path)
     credentials_path = config_parser['telemetry']['credentials_path']
