@@ -27,21 +27,13 @@ delay_period = 0.05 #0.1 .. 0.001, slower .. faster
 
 #55 (0.55ms) .. 252 (2.52ms) 
 while True:  
-  for i in range (55, 252, 1):
+  for i, j in zip(range(55, 252, 1), range(252, 55, -1)):
     wiringpi.pwmWrite(13, i)
-    print('loop1 {}'.format(i))
+    wiringpi.pwmWrite(18, j)
+    print('{}, {}'.format(i, j))
     time.sleep(delay_period)
-  for i in range(252, 55, -1):
+  for i, j in zip(range(252, 55, -1), range(55, 252, 1)):
     wiringpi.pwmWrite(13, i)
-    print('loop2 {}'.format(i))
+    wiringpi.pwmWrite(18, j)
+    print('{}, {}'.format(i, j))
     time.sleep(delay_period)
-  #for (i, j) in [(i, j) for i in range(55, 252, 1) for j in range(252, 55, -1)]:
-  #  wiringpi.pwmWrite(13, i)
-  #  wiringpi.pwmWrite(18, j)
-  #  print('{}, {}'.format(i, j))
-  #  time.sleep(delay_period)
-  #for (i, j) in [(i, j) for i in range(252, 55, -1) for j in range(55, 252, 1)]:
-  #  wiringpi.pwmWrite(13, i)
-  #  wiringpi.pwmWrite(18, j)
-  #  print('{}, {}'.format(i, j))
-  #  time.sleep(delay_period)
