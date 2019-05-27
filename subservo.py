@@ -81,6 +81,7 @@ def main():
         future.result()
       except KeyboardInterrupt:
         future.cancel()
+        raise
   except Exception as e:
     print('Failed subscribing to {}'.format(subscription_path))
   #  [END main]
