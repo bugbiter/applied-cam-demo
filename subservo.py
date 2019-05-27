@@ -131,8 +131,8 @@ def __subscriber_callback(message):
 
   try:
     if data['head']['type'] == 'goggle_direction':
-      __set_tilt_angle(data['body']['pitch']
-      __set_pan_angle(data['body']['yaw']
+      __set_tilt_angle(data['body']['pitch'])
+      __set_pan_angle(data['body']['yaw'])
   except Exception as e:
     print('Failed to set tilt/pan: {}'.format(e))
   message.ack()
