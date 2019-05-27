@@ -154,11 +154,11 @@ def __set_tilt_angle(angle):
     angle = tilt_max_angle
     print('truncate angle > max')
 
-  servo_delta = float(tilt_servo_max_pw - tilt_servo_min_pw)
-  angle_delta = float(tilt_max_angle - tilt_min_angle)
+  servo_delta = tilt_servo_max_pw - tilt_servo_min_pw
+  angle_delta = tilt_max_angle - tilt_min_angle
   pw = ((angle - tilt_min_angle) * servo_delta / angle_delta) + tilt_servo_min_pw
   print('pw {} pin {}'.format(pw, tilt_pin))
-  wiringpi.pwmWrite(tilt_pin, pw)
+  wiringpi.pwmWrite(tilt_pin, int(pw))
   # [END __set_tilt_angle]
 
 def __set_pan_angle(angle):
@@ -177,11 +177,11 @@ def __set_pan_angle(angle):
     angle = pan_max_angle
     print('truncate angle > max')
   
-  servo_delta = float(pan_servo_max_pw - pan_servo_min_pw)
-  angle_delta = float(pan_max_angle - pan_min_angle)
+  servo_delta = pan_servo_max_pw - pan_servo_min_pw
+  angle_delta = pan_max_angle - pan_min_angle
   pw = ((angle - pan_min_angle) * servo_delta / angle_delta) + pan_servo_min_pw
   print('pw {}, pin {}'.format(pw, pan_pin))
-  wiringpi.pwmWrite(pan_pin, pw)
+  wiringpi.pwmWrite(pan_pin, int(pw))
   # [END __set_pan_angle]
 
 if __name__ == '__main__':
