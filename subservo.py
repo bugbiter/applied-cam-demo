@@ -36,8 +36,8 @@ def main():
     print('Exception when reading telemetry parameters from {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
-    tilt_pin = config_parser['io']['tilt_pin']
-    pan_pin = config_parser['io']['pan_pin']
+    tilt_pin = int(config_parser['io']['tilt_pin'])
+    pan_pin = int(config_parser['io']['pan_pin'])
     print('Read pwm pins from {}, tilt: {}, pan: {}'.format(config_file_path, tilt_pin, pan_pin))
   except:
     print('Exception when reading io parameters from {}'.format(config_file_path))
