@@ -26,18 +26,18 @@ def main():
   config_file_path = r'$config/parameters.conf'
   try:
     config_parser.read(config_file_path)
-    credentials_path = config_parser.get('telemetry', 'credentials_path')
+    credentials_path = config_parser['telemetry']['credentials_path']
     print('Read credentials path from {}: {}'.format(config_file_path, credentials_path))
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-    project_id = config_parser.get('telemetry', 'project_id')
-    topic_id = config_parser.get('telemetry', 'topic_id')
+    project_id = config_parser['telemetry']['project_id']
+    topic_id = config_parser['telemetry']['topic_id']
     print('Read pubsub project: {}, and topic: {}'.format(project_id, topic_id))
   except:
     print('Exception when reading telemetry parameters from {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
-    tilt_pin = config_parser.get('io', 'tilt_pin')
-    pan_pin = config_parser.get('io', 'pan_pin')
+    tilt_pin = config_parser['io']['tilt_pin']
+    pan_pin = config_parser['io']['pan_pin']
     print('Read pwm pins from {}, tilt: {}, pan: {}'.format(config_file_path, tilt_pin, pan_pin))
   except:
     print('Exception when reading io parameters from {}'.format(config_file_path))
