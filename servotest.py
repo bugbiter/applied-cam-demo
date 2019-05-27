@@ -12,7 +12,7 @@ import wiringpi
 # use 'GPIO naming'
 wiringpi.wiringPiSetupGpio()
  
-# set #18 to be a PWM output
+# set #13 & 18 to be PWM outputs
 wiringpi.pinMode(13, wiringpi.GPIO.PWM_OUTPUT)
 wiringpi.pinMode(18, wiringpi.GPIO.PWM_OUTPUT)
  
@@ -23,15 +23,16 @@ wiringpi.pwmSetMode(wiringpi.GPIO.PWM_MODE_MS)
 wiringpi.pwmSetClock(192)
 wiringpi.pwmSetRange(2000)
  
-delay_period = 0.01 #0.1 .. 0.001, slower .. faster
+delay_period = 0.05 #0.1 .. 0.001, slower .. faster
  
-while True:
-  #55 (0.55ms) to 252 (2.52ms)
-  for (p, p2) in [(p, p2) for p in range(55, 252, 1) for p2 in range(252, 55, -1)]:
-    wiringpi.pwmWrite(13, p)
-    wiringpi.pwmWrite(18, p2)
+while True:  #55 (0.55ms) .. 252 (2.52ms)
+  for (i, j) in [(i, j) for i in range(55, 252, 1) for j in range(252, 55, -1)]:
+    wiringpi.pwmWrite(13, i)
+    wiringpi.pwmWrite(18, j)
+    print('{}, {}'.format(i, j))
     time.sleep(delay_period)
-  for (p, p2) in [(p, p2) for p in range(252, 55, -1) for p2 in range(55, 252, 1)]:
-    wiringpi.pwmWrite(13, p)
-    wiringpi.pwmWrite(18, p2)
+  for (i, j) in [(i, j) for i in range(252, 55, -1) for j in range(55, 252, 1)]:
+    wiringpi.pwmWrite(13, i)
+    wiringpi.pwmWrite(18, j)
+    print('{}, {}'.format(i, j))
     time.sleep(delay_period)
