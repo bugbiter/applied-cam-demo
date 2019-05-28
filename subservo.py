@@ -141,13 +141,18 @@ def __subscriber_callback(message):
   data = json.loads(message.data)
 
   try:
-      if data['head']['last_seen'] < __subscriber_callback.last_seen:
-        # ignore messages out of sequence
-        return
+    if data['head']['last_seen'] < __subscriber_callback.last_seen:
+      # ignore messages out of sequence
+      print('Skip this message - out of sequence')
+      return
   except AttributeError:
-      __subscriber_callback.last_seen = data['head']['last_seen']
-
+    print('First message since the start')
+  except:
+    print('Some weird error checking the pubsub message head.last_seen')
+    return
+  __subscriber_callback.last_seen = data['head']['last_seen']
   print('Last seen {}'.format(__subscriber_callback.last_seen))
+
   try:
     if data['head']['type'] == 'goggle_direction':
       __set_angle(tilt_pin, data['body']['pitch'], tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
