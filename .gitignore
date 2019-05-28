@@ -2,6 +2,7 @@ config/
 config/agent-key.json
 googleappcredentials.json
 pubsubcredentials.json
+wifi-pi.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
