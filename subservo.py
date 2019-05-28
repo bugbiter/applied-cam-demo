@@ -143,12 +143,12 @@ def __subscriber_callback(message):
   try:
     if data['head']['last_seen'] < __subscriber_callback.last_seen:
       # ignore messages out of sequence
-      print('Skip this message - out of sequence')
+      print('Skip this message - out of sequence, head: {}, last seen: {}'.format(data['head']['last_seen'], __subscriber_callback.last_seen))
       return
   except AttributeError:
     print('First message since the start')
   except:
-    print('Some weird error checking the pubsub message head.last_seen')
+    print('Some weird exception checking the pubsub message head.last_seen')
     return
   __subscriber_callback.last_seen = data['head']['last_seen']
   print('Last seen {}'.format(__subscriber_callback.last_seen))
