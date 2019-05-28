@@ -52,3 +52,7 @@ Revision: a020d3
 sudo mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
 #when done:
 sudo umount -v /proc/cpuinfo
+
+# @boot, to run:
+sudo mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
+sudo ~/applied/applied-cam-demo/env/bin/python3 servotest.py

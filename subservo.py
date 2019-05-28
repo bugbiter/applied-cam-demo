@@ -113,6 +113,17 @@ def main():
 
 def __subscriber_callback(message):
   # [START __subscriber_callback]
+  global tilt_servo_max_pw
+  global tilt_servo_min_pw
+  global tilt_max_angle
+  global tilt_min_angle
+  global tilt_pin
+  global pan_servo_max_pw
+  global pan_servo_min_pw
+  global pan_max_angle
+  global pan_min_angle
+  global pan_pin
+
   #{
   #  "links": [],
   #  "head": {
@@ -126,63 +137,43 @@ def __subscriber_callback(message):
   #      "yaw": 0.7853981633974483 (pan)
   #  }
   #}
-  print(message.data)
+  #print(message.data)
   data = json.loads(message.data)
 
   try:
+      if data['head']['last_seen'] < __subscriber_callback.last_seen:
+        # ignore messages out of sequence
+        return
+  except AttributeError:
+      __subscriber_callback.last_seen = data['head']['last_seen']
+
+  print('Last seen {}'.format(__subscriber_callback.last_seen))
+  try:
     if data['head']['type'] == 'goggle_direction':
-      __set_tilt_angle(data['body']['pitch'])
-      __set_pan_angle(data['body']['yaw'])
+      __set_angle(tilt_pin, data['body']['pitch'], tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
+      __set_angle(pan_pin, data['body']['yaw'], pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle)
   except Exception as e:
     print('Failed to set tilt/pan: {}'.format(e))
   message.ack()
   # [END __subscriber_callback]
 
-def __set_tilt_angle(angle):
-  # [START __set_tilt_angle]
-  global tilt_servo_max_pw
-  global tilt_servo_min_pw
-  global tilt_max_angle
-  global tilt_min_angle
-  global tilt_pin
-
-  print('Tilt angle {}'.format(angle))
-  if angle < tilt_min_angle:
-    angle = tilt_min_angle
+def __set_angle(pin, angle, max_pw, min_pw, max_angle, min_angle):
+  # [START __set_angle]
+  print('Angle {}'.format(angle))
+  if angle < min_angle:
+    angle = min_angle
     print('Truncate angle < min')
-  elif angle > tilt_max_angle:
-    angle = tilt_max_angle
+  elif angle > max_angle:
+    angle = max_angle
     print('truncate angle > max')
 
-  servo_delta = tilt_servo_max_pw - tilt_servo_min_pw
-  angle_delta = tilt_max_angle - tilt_min_angle
-  pw = ((angle - tilt_min_angle) * servo_delta / angle_delta) + tilt_servo_min_pw
-  print('pw {} pin {}'.format(pw, tilt_pin))
-  wiringpi.pwmWrite(tilt_pin, int(pw))
-  # [END __set_tilt_angle]
+  servo_delta = max_pw - min_pw
+  angle_delta = max_angle - min_angle
+  pw = ((angle - min_angle) * servo_delta / angle_delta) + min_pw
+  print('pw {} pin {}'.format(pw, pin))
+  wiringpi.pwmWrite(pin, int(pw))
+  # [END __set_angle]
 
-def __set_pan_angle(angle):
-  # [START __set_pan_angle]
-  global pan_servo_max_pw
-  global pan_servo_min_pw
-  global pan_max_angle
-  global pan_min_angle
-  global pan_pin
-
-  print('Pan angle {}'.format(angle))
-  if angle < pan_min_angle:
-    angle = pan_min_angle
-    print('Truncate angle < min')
-  elif angle > pan_max_angle:
-    angle = pan_max_angle
-    print('truncate angle > max')
-  
-  servo_delta = pan_servo_max_pw - pan_servo_min_pw
-  angle_delta = pan_max_angle - pan_min_angle
-  pw = ((angle - pan_min_angle) * servo_delta / angle_delta) + pan_servo_min_pw
-  print('pw {}, pin {}'.format(pw, pan_pin))
-  wiringpi.pwmWrite(pan_pin, int(pw))
-  # [END __set_pan_angle]
 
 if __name__ == '__main__':
   main()
