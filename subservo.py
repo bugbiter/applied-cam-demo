@@ -183,7 +183,7 @@ def __set_angle(pin, angle, max_pw, min_pw, max_angle, min_angle):
   # [END __set_angle]
 
 def __get_script_path():
-    return os.path.dirname(os.path.realpath(sys.argv[0]))
+    return os.path.dirname(os.path.realpath(__file__)) #os.path.dirname(os.path.realpath(sys.argv[0]))
 
 if __name__ == '__main__':
   main()
