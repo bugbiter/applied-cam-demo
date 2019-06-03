@@ -42,6 +42,7 @@ def main():
   config_parser = configparser.RawConfigParser()
   #config_file_path = r'./config/parameters.conf'
   config_file_path = os.path.join(__get_script_path(), '/config/parameters.conf')
+  print('Config path: {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
     credentials_path = config_parser['telemetry']['credentials_path']
