@@ -5,6 +5,7 @@ import configparser
 import json
 import math
 import os
+import sys
 import time
 import wiringpi
 from google.cloud import pubsub_v1
@@ -40,7 +41,14 @@ def main():
   # read config
   config_parser = configparser.RawConfigParser()
   #config_file_path = r'./config/parameters.conf'
-  config_file_path = r'~/applied/applied-cam-demo/config/parameters.conf'
+  #If the module is executed as a script __name__ will be '__main__' and sys.argv[0] will be the full path of the module.
+  if __name__ == '__main__':
+      path = os.path.split(sys.argv[0])[0]
+  #Else the module was imported and it has a __file__ attribute that will be the full path of the module.
+  else:
+      path = os.path.split(__file__)[0]
+  #Full path made by joining the base path and the file name.
+  config_file_path = os.path.join(path, 'config/parameters.conf')
   print('Config path: {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
