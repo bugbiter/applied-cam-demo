@@ -5,6 +5,7 @@ import configparser
 import json
 import math
 import os
+import sys
 import time
 import wiringpi
 from google.cloud import pubsub_v1
@@ -39,7 +40,8 @@ def main():
 
   # read config
   config_parser = configparser.RawConfigParser()
-  config_file_path = r'./config/parameters.conf'
+  #config_file_path = r'./config/parameters.conf'
+  config_file_path = os.path.join(__get_script_path(), '/config/parameters.conf')
   try:
     config_parser.read(config_file_path)
     credentials_path = config_parser['telemetry']['credentials_path']
@@ -179,6 +181,8 @@ def __set_angle(pin, angle, max_pw, min_pw, max_angle, min_angle):
   wiringpi.pwmWrite(pin, int(pw))
   # [END __set_angle]
 
+def __get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 if __name__ == '__main__':
   main()

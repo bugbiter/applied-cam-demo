@@ -1,0 +1,13 @@
+[Unit]
+Description=Mount cpuinfo for GPIO
+Requires=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
+ExecStop=/bin/umount -v /proc/cpuinfo
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,7 @@
 # applied-cam-demo
 Demo for camera tilt & pan using Google PubSub for angle input
 Ubuntu 18.4 on Raspberry Pi 3 B+
+Servo: https://www.servocity.com/hs-225mg
 
 sudo apt-get install -y python3-pip
 sudo apt-get install build-essential libssl-dev libffi-dev python-dev
@@ -53,6 +54,13 @@ sudo mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
 #when done:
 sudo umount -v /proc/cpuinfo
 
-# @boot, to run:
+#@boot, to run:
 sudo mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
 sudo ~/applied/applied-cam-demo/env/bin/python3 servotest.py
+
+#systemd config:
+copy demo.service to /etc/systemd/system, chmod 664
+#verify:
+sudo systemctl start|stop demo.service
+systemctl status demo.service
+sudo systemctl enable|disable demo.service
