@@ -26,10 +26,10 @@ wiringpi.pwmSetRange(2000)
 delay_period = 0.05 #0.1 .. 0.001, slower .. faster
 
 #55 (0.55ms) .. 252 (2.52ms) 
-wiringpi.pwmWrite(13, 98)
-wiringpi.pwmWrite(15, 98)
 
-#while True:  
+while True:  
+  wiringpi.pwmWrite(13, 98)
+  wiringpi.pwmWrite(15, 98)
 #  for i, j in zip(range(55, 252, 1), range(252, 55, -1)):
 #    wiringpi.pwmWrite(13, i)
 #    wiringpi.pwmWrite(18, j)
