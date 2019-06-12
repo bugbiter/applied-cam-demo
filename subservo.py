@@ -10,7 +10,7 @@ import time
 import wiringpi
 from google.cloud import pubsub_v1
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 # globals
 # default GPIO pin assignment
@@ -18,17 +18,21 @@ tilt_servo_max_pw = 252
 tilt_servo_min_pw = 55.3
 tilt_min_angle = -1.57
 tilt_max_angle = 1.57
+tilt_ratio = 1.0
 tilt_pin = 13
 pan_servo_max_pw = 252
 pan_servo_min_pw = 55.3
 pan_min_angle = -1.57
 pan_max_angle = 1.57
+pan_ratio = 1.0
 pan_pin = 18
 
 def main():
   # [START main]
   global tilt_pin
   global pan_pin
+  global tilt_ratio
+  global pan_ratio
   global tilt_servo_max_pw
   global tilt_servo_min_pw
   global pan_servo_max_pw
@@ -64,6 +68,8 @@ def main():
     config_parser.read(config_file_path)
     tilt_pin = int(config_parser['io']['tilt_pin'])
     pan_pin = int(config_parser['io']['pan_pin'])
+    tilt_ratio = float(config_parser['io']['tilt_ratio'])
+    pan_ratio = float(config_parser['io']['pan_ratio'])
     tilt_servo_max_pw = float(config_parser['io']['tilt_servo_max_pw'])
     tilt_servo_min_pw = float(config_parser['io']['tilt_servo_min_pw'])
     pan_servo_max_pw = float(config_parser['io']['pan_servo_max_pw'])
@@ -72,8 +78,8 @@ def main():
     tilt_min_angle = float(config_parser['io']['tilt_min_angle'])
     pan_max_angle = float(config_parser['io']['pan_max_angle'])
     pan_min_angle = float(config_parser['io']['pan_min_angle'])
-    print('Tilt pin {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(tilt_pin, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle))
-    print('Pan pin {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(pan_pin, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle))
+    print('Tilt pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(tilt_pin, tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle))
+    print('Pan pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(pan_pin, pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle))
   except:
     print('Exception when reading io parameters from {}'.format(config_file_path))
 
@@ -127,11 +133,13 @@ def __subscriber_callback(message):
   global tilt_servo_min_pw
   global tilt_max_angle
   global tilt_min_angle
+  global tilt_ratio
   global tilt_pin
   global pan_servo_max_pw
   global pan_servo_min_pw
   global pan_max_angle
   global pan_min_angle
+  global pan_ratio
   global pan_pin
 
   #{
@@ -165,14 +173,14 @@ def __subscriber_callback(message):
 
   try:
     if data['head']['type'] == 'goggle_direction':
-      __set_angle(tilt_pin, data['body']['pitch'], tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
-      __set_angle(pan_pin, data['body']['yaw'], pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle)
+      __set_angle(tilt_pin, data['body']['pitch'], tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
+      __set_angle(pan_pin, data['body']['yaw'], pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle)
   except Exception as e:
     print('Failed to set tilt/pan: {}'.format(e))
   message.ack()
   # [END __subscriber_callback]
 
-def __set_angle(pin, angle, max_pw, min_pw, max_angle, min_angle):
+def __set_angle(pin, angle, ratio, max_pw, min_pw, max_angle, min_angle):
   # [START __set_angle]
   print('Angle {}'.format(angle))
   if angle < min_angle:
@@ -181,10 +189,11 @@ def __set_angle(pin, angle, max_pw, min_pw, max_angle, min_angle):
   elif angle > max_angle:
     angle = max_angle
     print('truncate angle > max')
-
+  angle_scaled = angle * ratio
+  print('Angle scaled {}'.format(angle_scaled))
   servo_delta = max_pw - min_pw
   angle_delta = max_angle - min_angle
-  pw = ((angle - min_angle) * servo_delta / angle_delta) + min_pw
+  pw = ((angle_scaled - min_angle) * servo_delta / angle_delta) + min_pw
   print('pw {} pin {}'.format(pw, pin))
   wiringpi.pwmWrite(pin, int(pw))
   # [END __set_angle]

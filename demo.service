@@ -7,6 +7,7 @@ After=network.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/mount -v --bind /root/fake-cpuinfo /proc/cpuinfo
+ExecStart=~/applied/applied-cam-demo/env/bin/python3 ~/applied/applied-cam-demo/subservo.py
 ExecStop=/bin/umount -v /proc/cpuinfo
 
 [Install]
