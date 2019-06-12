@@ -30,6 +30,7 @@ delay_period = 0.05 #0.1 .. 0.001, slower .. faster
 while True:  
   wiringpi.pwmWrite(13, 98)
   wiringpi.pwmWrite(15, 98)
+  time.sleep(delay_period)
 #  for i, j in zip(range(55, 252, 1), range(252, 55, -1)):
 #    wiringpi.pwmWrite(13, i)
 #    wiringpi.pwmWrite(18, j)
