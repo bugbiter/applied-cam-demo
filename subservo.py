@@ -2,7 +2,6 @@
 # coding=utf-8
 
 import configparser
-import datetime
 import json
 import logging
 import logging.config
@@ -100,7 +99,7 @@ def main():
   if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
     logger.info('$GOOGLE_APPLICATION_CREDENTIALS: {}'.format(os.environ['GOOGLE_APPLICATION_CREDENTIALS']))
   else:
-    print('Could not find $GOOGLE_APPLICATION_CREDENTIALS')
+    logger.error('Could not find $GOOGLE_APPLICATION_CREDENTIALS')
     # should exit!
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/home/ubuntu/agent-key.json'
   
