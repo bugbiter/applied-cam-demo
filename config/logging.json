@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+      "simple": {
+          "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+      }
+  },
+
+  "handlers": {
+      "file_handler": {
+          "class": "logging.FileHandler",
+          "level": "DEBUG",
+          "formatter": "simple",
+          "filename": "subservologging.log",
+          "encoding": "utf8"
+      },
+      "console_handler": {
+        "class": "logging.StreamHandler",
+        "level": "DEBUG",
+        "formatter": "simple"
+      }
+  },
+
+  "root": {
+      "level": "DEBUG",
+      "handlers": ["console_handler"]
+  }
+}

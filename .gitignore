@@ -1,4 +1,7 @@
+third_party/
+mqttservo.py
 config/
+config/ec2_private.pem
 config/agent-key.json
 googleappcredentials.json
 pubsubcredentials.json
