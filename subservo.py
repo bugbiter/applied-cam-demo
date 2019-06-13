@@ -65,22 +65,17 @@ def main():
   #Else the module was imported and it has a __file__ attribute that will be the full path of the module.
   else:
       path = os.path.split(__file__)[0]
-  #Full path made by joining the base path and the file name.
   config_file_path = os.path.join(path, 'config/parameters.conf')
-  print('Config path: {}'.format(config_file_path))
   logger.info('Config path: {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
     credentials_path = config_parser['telemetry']['credentials_path']
-    #print('Read credentials path {}'.format(credentials_path))
     logger.info('Read credentials path {}'.format(credentials_path))
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
     project_id = config_parser['telemetry']['project_id']
     topic_id = config_parser['telemetry']['topic_id']
-    #print('Read pubsub project {}, and topic {}'.format(project_id, topic_id))
     logger.info('Read pubsub project {}, and topic {}'.format(project_id, topic_id))
   except:
-    #print('Exception when reading telemetry parameters from {}'.format(config_file_path))
     logger.error('Exception when reading telemetry parameters from {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
@@ -96,17 +91,13 @@ def main():
     tilt_min_angle = float(config_parser['io']['tilt_min_angle'])
     pan_max_angle = float(config_parser['io']['pan_max_angle'])
     pan_min_angle = float(config_parser['io']['pan_min_angle'])
-    #print('Tilt pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(tilt_pin, tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle))
     logger.info('Tilt pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(tilt_pin, tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle))
-    #print('Pan pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(pan_pin, pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle))
     logger.info('Pan pin {}, servo ratio {}, servo max pw {}, servo min pw {}, max angle {}, min angle {}'.format(pan_pin, pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle))
   except:
-    #print('Exception when reading io parameters from {}'.format(config_file_path))
     logger.error('Exception when reading io parameters from {}'.format(config_file_path))
 
   # sanity check
   if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
-    #print('$GOOGLE_APPLICATION_CREDENTIALS: {}'.format(os.environ['GOOGLE_APPLICATION_CREDENTIALS']))
     logger.info('$GOOGLE_APPLICATION_CREDENTIALS: {}'.format(os.environ['GOOGLE_APPLICATION_CREDENTIALS']))
   else:
     print('Could not find $GOOGLE_APPLICATION_CREDENTIALS')
@@ -135,7 +126,6 @@ def main():
   try:
     subscription = subscriber.create_subscription(subscription_path, topic_path)
   except Exception as e:
-    #print('Failed creating subscription: {}'.format(e))
     logger.info('Failed creating subscription: {}'.format(e))
   # subscribe
   try:
@@ -147,7 +137,6 @@ def main():
         future.cancel()
         raise
   except Exception as e:
-    #print('Failed subscribing to {}'.format(subscription_path))
     logger.error('Failed subscribing to {}'.format(subscription_path))
   #  [END main]
 
@@ -182,42 +171,34 @@ def __subscriber_callback(message):
   #  }
   #}
   try:
-    #print('Message received at {}'.format(datetime.datetime.now))
-    logger.debug('Message received at {}'.format(datetime.datetime.now))
+    logger.debug('PubSub message received')
     data = json.loads(message.data)
     if data['head'].get('type') != 'goggle_direction':
-      #print('Unknown message type')
       logger.debug('Unknown message type')
       message.ack()
       return
   except:
-    #print(message.data)
     logger.error('Could not understand message: {}'.format(message.data))
     message.ack()
     return
   try:
     if data['head'].get('last_seen') < __subscriber_callback.last_seen:
-      #print('Skip this message - out of sequence, head: {}, last seen: {}'.format(data['head']['last_seen'], __subscriber_callback.last_seen))
       logger.debug('Skip this message - out of sequence, head: {}, last seen: {}'.format(data['head']['last_seen'], __subscriber_callback.last_seen))
       message.ack()
       return
   except AttributeError:
-    #print('First message since the start')
     logger.debug('First message since the start')
   except:
-    #print('Some weird exception checking the pubsub message head.last_seen. Skip this')
     logger.error('Some weird exception checking the pubsub message head.last_seen. Skip this')
     message.ack()
     return
   __subscriber_callback.last_seen = data['head']['last_seen']
-  #print('Last seen {}'.format(__subscriber_callback.last_seen))
   #logger.debug('Last seen {}'.format(__subscriber_callback.last_seen))
 
   try:
     __set_angle(tilt_pin, data['body']['pitch'], tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
     __set_angle(pan_pin, data['body']['yaw'], pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle)
   except Exception as e:
-    #print('Failed to set tilt/pan: {}'.format(e))
     logger.error('Failed to set tilt/pan: {}'.format(e))
   message.ack()
   # [END __subscriber_callback]
@@ -226,23 +207,20 @@ def __set_angle(pin, angle, ratio, max_pw, min_pw, max_angle, min_angle):
   # [START __set_angle]
   logger = logging.getLogger(__name__)
 
-  #print('Angle {} on pin {}'.format(angle, pin))
   logger.debug('Angle {} on pin {}'.format(angle, pin))
   if angle < min_angle:
     angle = min_angle
-    #print('Truncate angle < min')
     logger.debug('Truncate angle < min')
   elif angle > max_angle:
     angle = max_angle
-    #print('Truncate angle > max')
     logger.debug('Truncate angle > max')
 
   #angle_scaled = angle * ratio
-  #print('Angle scaled {}'.format(angle_scaled))
+  #logger.debug('Angle scaled {}'.format(angle_scaled))
   servo_delta = max_pw - min_pw
   angle_delta = max_angle - min_angle
   pw = ((angle - min_angle) * servo_delta / angle_delta) + min_pw
-  #print('PW {} pin {}'.format(pw, pin))
+  #logger.debug('PW {} pin {}'.format(pw, pin))
   wiringpi.pwmWrite(pin, int(pw))
   # [END __set_angle]
 
