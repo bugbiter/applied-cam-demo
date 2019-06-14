@@ -44,11 +44,20 @@ def main():
   global pan_max_angle
   global pan_min_angle
 
+  # If the module is executed as a script __name__ will be '__main__' and sys.argv[0] 
+  # will be the full path of the module.
+  if __name__ == '__main__':
+      path_here = os.path.split(sys.argv[0])[0]
+  # Else the module was imported and it has a __file__ attribute that will be the full path of the module.
+  else:
+      path_here = os.path.split(__file__)[0]
+
   # configure logging
+  loggerconfig_file_path = os.path.join(path_here, 'config/logging.json')
   # If applicable, delete the existing log file to generate a fresh log file during each execution
   #if path.isfile("subservologging.log"):
   #  remove("subservologging.log")
-  with open("config/logging.json", 'r') as logging_configuration_file:
+  with open(loggerconfig_file_path, 'r') as logging_configuration_file:
     config_dict = json.load(logging_configuration_file)
   logging.config.dictConfig(config_dict)
   # Log that the logger was configured
@@ -57,14 +66,7 @@ def main():
 
   # read config
   config_parser = configparser.RawConfigParser()
-  #config_file_path = r'./config/parameters.conf'
-  #If the module is executed as a script __name__ will be '__main__' and sys.argv[0] will be the full path of the module.
-  if __name__ == '__main__':
-      path = os.path.split(sys.argv[0])[0]
-  #Else the module was imported and it has a __file__ attribute that will be the full path of the module.
-  else:
-      path = os.path.split(__file__)[0]
-  config_file_path = os.path.join(path, 'config/parameters.conf')
+  config_file_path = os.path.join(path_here, 'config/parameters.conf')
   logger.info('Config path: {}'.format(config_file_path))
   try:
     config_parser.read(config_file_path)
@@ -187,6 +189,10 @@ def __subscriber_callback(message):
       return
   except AttributeError:
     logger.debug('First message since the start')
+  except KeyError:
+    logger.info('Message does not contain head.last_seen. Skip this')
+    message.ack()
+    return
   except:
     logger.error('Some weird exception checking the pubsub message head.last_seen. Skip this')
     message.ack()

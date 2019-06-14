@@ -10,7 +10,7 @@
   "handlers": {
       "file_handler": {
           "class": "logging.FileHandler",
-          "level": "DEBUG",
+          "level": "INFO",
           "formatter": "simple",
           "filename": "subservologging.log",
           "encoding": "utf8"
