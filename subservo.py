@@ -201,7 +201,7 @@ def __subscriber_callback(message):
   #logger.debug('Last seen {}'.format(__subscriber_callback.last_seen))
 
   try:
-    __set_angle(tilt_pin, data['body']['roll'], tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
+    __set_angle(tilt_pin, -data['body']['roll'], tilt_ratio, tilt_servo_max_pw, tilt_servo_min_pw, tilt_max_angle, tilt_min_angle)
     __set_angle(pan_pin, data['body']['yaw'], pan_ratio, pan_servo_max_pw, pan_servo_min_pw, pan_max_angle, pan_min_angle)
   except Exception as e:
     logger.error('Failed to set tilt/pan: {}'.format(e))
