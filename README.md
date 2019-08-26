@@ -61,6 +61,28 @@ sudo ~/applied/applied-cam-demo/env/bin/python3 servotest.py
 #systemd config:
 copy demo.service to /etc/systemd/system, chmod 664
 #verify:
-sudo systemctl start|stop demo.service
+sudo systemctl start demo.service #for test
 systemctl status demo.service
-sudo systemctl enable|disable demo.service
+sudo systemctl enable demo.service #start at boot
+
+# wlan config:
+Connect Pi to your cabled network. Open a command line (e.g. Cmder) and connect with ssl:
+> ssh ubuntu@<ipaddress>
+Enter password (in Keybase).
+
+> cd /etc/netplan/
+> ls -l
+Locate the file similar to
+ -rw-r--r-- 1 root root 666 May 15 22:00 50-cloud-init.yaml
+Backup the file, and edit
+> cp 50-cloud-init.yaml 50-cloud-init.yaml.bak
+> sudo nano 50-cloud-init.yaml
+Find network:wifis:wlan0:access-points: and edit the name and password to your required wifi. Save and exit.
+
+Test and apply:
+> sudo netplan --debug try
+> sudo netplan --debug generate
+> sudo netplan --debug apply
+> sudo reboot
+
+Disconnect the network cable, wait for reboot to finish. Connect with ssh ubuntu@<wifiipaddress> to verify.
